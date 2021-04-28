@@ -59,9 +59,28 @@ export default function Episode({ episode }: EpisodeProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
+    const { data } = await api.get('episodes', {
+        params: {
+            _limit: 2,
+            _sort: 'published_at',
+            _order: 'desc'
+        }
+    })
+
+    const paths = data.map(episode => {
+        return{
+            params: {
+                slug: episode.id
+            }
+        }
+    })
+
     return {
-        paths: [],
+        // fallback é um tipo de bloqueio
+        paths,
         fallback: "blocking",
+        // fallback: true, // quando true, ele faz o carregamento da página do conteúdo independentemente do conteúdo ter sido carregado. Neste caso é necessária a importação do useRouter, para mostrar algo enquanto o conteúdo é carregado.
+        // fallback: false, // quando false, ele não carrega o conteúdo, mas carrega a página; sempre retornará um 404
     }
 }
 
